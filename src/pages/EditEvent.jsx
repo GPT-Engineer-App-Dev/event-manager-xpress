@@ -1,30 +1,38 @@
 import { useState, useEffect } from "react";
+import { useUpdateEvent, useEvent } from "../integrations/supabase/index.js";
 import { Container, VStack, Heading, Input, Button, Textarea } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const EditEvent = ({ events, updateEvent }) => {
+const EditEvent = () => {
   const { id } = useParams();
-  const event = events.find((event) => event.id === id);
-  const [title, setTitle] = useState(event ? event.title : "");
+  const { data: event, isLoading } = useEvent(id);
+  const [title, setTitle] = useState(event ? event.name : "");
   const [description, setDescription] = useState(event ? event.description : "");
-  const navigate = useNavigate();
+  const updateEvent = useUpdateEvent();
 
   useEffect(() => {
-    if (!event) {
+    if (!isLoading && !event) {
       navigate("/events");
     }
-  }, [event, navigate]);
+  }, [event, isLoading, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const updatedEvent = {
-      ...event,
-      title,
+      id,
+      name: title,
       description,
     };
-    updateEvent(updatedEvent);
-    navigate("/events");
+    updateEvent.mutate(updatedEvent, {
+      onSuccess: () => {
+        navigate("/events");
+      },
+    });
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Container centerContent>
