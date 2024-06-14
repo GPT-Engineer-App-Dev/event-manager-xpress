@@ -16,8 +16,8 @@ const Events = ({ events, deleteEvent }) => {
                 <Text>{event.description}</Text>
               </VStack>
               <HStack>
-                <Button colorScheme="blue" as={Link} to={`/edit-event/${event.id}`}>
-                  Edit
+                <Button colorScheme="teal" as={Link} to={`/event/${event.id}`}>
+                  View Details
                 </Button>
                 <Button colorScheme="red" onClick={() => deleteEvent(event.id)}>
                   Delete
